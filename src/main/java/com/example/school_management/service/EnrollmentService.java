@@ -73,7 +73,7 @@ public class EnrollmentService {
 
         Enrollment.ScoreDetail scoreDetail = enrollment.getScores() == null ? new Enrollment.ScoreDetail() : enrollment.getScores();
         scoreDetail.setMidterm(request.getMidterm());
-        scoreDetail.setFinall(request.getFinall());
+        scoreDetail.setFinalExam(request.getFinalExam());
         scoreDetail.setAssignment(request.getAssignment());
         enrollment.setScores(scoreDetail);
         enrollment.setFinalScore(calculateFinalScore(scoreDetail));
@@ -87,10 +87,10 @@ public class EnrollmentService {
         if (scoreDetail == null) {
             return null;
         }
-        if (scoreDetail.getMidterm() == null || scoreDetail.getFinall() == null || scoreDetail.getAssignment() == null) {
+        if (scoreDetail.getMidterm() == null || scoreDetail.getFinalExam() == null || scoreDetail.getAssignment() == null) {
             return null;
         }
-        return (scoreDetail.getMidterm() * 0.3) + (scoreDetail.getAssignment() * 0.2) + (scoreDetail.getFinall() * 0.5);
+        return (scoreDetail.getMidterm() * 0.3) + (scoreDetail.getAssignment() * 0.2) + (scoreDetail.getFinalExam() * 0.5);
     }
 
     private void recalculateStudentGpa(String studentId) {

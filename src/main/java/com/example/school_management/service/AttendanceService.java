@@ -48,7 +48,6 @@ public class AttendanceService {
             case "PRESENT" -> summary.setTotalPresent(summary.getTotalPresent() + 1);
             case "ABSENT" -> summary.setTotalAbsent(summary.getTotalAbsent() + 1);
             case "LATE" -> summary.setTotalLate(summary.getTotalLate() + 1);
-            default -> throw new BadRequestException("status không hợp lệ");
         }
 
         attendance.setSummary(summary);
