@@ -19,7 +19,19 @@ public class ClassroomController {
     private final ClassroomRepository classroomRepository;
 
     @GetMapping
-    public List<Classroom> getAll() {
+    public List<Classroom> getAll(
+            @RequestParam(required = false) String teacherId,
+            @RequestParam(required = false) String semesterId
+    ) {
+        if (teacherId != null && semesterId != null) {
+            return classroomRepository.findByTeacherIdAndSemesterId(teacherId, semesterId);
+        }
+        if (teacherId != null) {
+            return classroomRepository.findByTeacherId(teacherId);
+        }
+        if (semesterId != null) {
+            return classroomRepository.findBySemesterId(semesterId);
+        }
         return classroomRepository.findAll();
     }
 

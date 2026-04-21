@@ -1,7 +1,9 @@
 package com.example.school_management.controller;
 
+import com.example.school_management.dto.AttendanceMarkRequest;
 import com.example.school_management.model.Attendance;
 import com.example.school_management.repository.AttendanceRepository;
+import com.example.school_management.service.AttendanceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import java.util.List;
 public class AttendanceController {
 
     private final AttendanceRepository attendanceRepository;
+    private final AttendanceService attendanceService;
 
     @GetMapping
     public List<Attendance> getAll() {
@@ -25,5 +28,10 @@ public class AttendanceController {
     @PostMapping
     public ResponseEntity<Attendance> create(@Valid @RequestBody Attendance attendance) {
         return new ResponseEntity<>(attendanceRepository.save(attendance), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/mark")
+    public ResponseEntity<Attendance> mark(@Valid @RequestBody AttendanceMarkRequest request) {
+        return ResponseEntity.ok(attendanceService.markAttendance(request));
     }
 }
