@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: school_management
+  data:
+    mongodb:
+      # Thay đổi URI này cho phù hợp với máy của bạn (Local hoặc MongoDB Atlas)
+      url: mongodb://localhost:27017/school_management_db
+
+server:
+  port: 8080
