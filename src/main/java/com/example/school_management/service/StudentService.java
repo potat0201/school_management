@@ -1,55 +1,56 @@
 package com.example.school_management.service;
 
 import com.example.school_management.dto.StudentDto;
+import com.example.school_management.exception.BadRequestException;
+import com.example.school_management.exception.NotFoundException;
 import com.example.school_management.model.Student;
 import com.example.school_management.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-@RequiredArgsConstructor // Lombok tự động tạo Constructor để inject Repository
+@RequiredArgsConstructor
 public class StudentService {
 
     private final StudentRepository studentRepository;
 
-    // 1. Hàm Thêm mới sinh viên
     public StudentDto createStudent(StudentDto dto) {
-        // Kiểm tra xem email đã tồn tại chưa
         if (studentRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Email đã được sử dụng!");
+            throw new BadRequestException("Email đã được sử dụng!");
         }
 
-        // Map từ DTO (Frontend gửi) sang Entity (Để lưu DB)
         Student student = Student.builder()
                 .studentCode(dto.getStudentCode())
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .phone(dto.getPhone())
-                .gpa(0.0) // Gán cứng giá trị mặc định
+                .gpa(0.0)
                 .totalCredits(0)
                 .build();
 
-        // Lưu vào MongoDB
         Student savedStudent = studentRepository.save(student);
-
-        // Map ngược lại Entity ra DTO để trả về Frontend
-        dto.setId(savedStudent.getId());
-        return dto;
+        return mapToDto(savedStudent);
     }
 
-    // 2. Hàm Tìm sinh viên theo Mã SV
     public StudentDto getStudentByCode(String studentCode) {
         Student student = studentRepository.findByStudentCode(studentCode)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên có mã: " + studentCode));
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy sinh viên có mã: " + studentCode));
+        return mapToDto(student);
+    }
 
-        // Tương tự, trả về DTO
+    public List<StudentDto> getAllStudents() {
+        return studentRepository.findAll().stream().map(this::mapToDto).toList();
+    }
+
+    private StudentDto mapToDto(Student student) {
         StudentDto responseDto = new StudentDto();
         responseDto.setId(student.getId());
         responseDto.setStudentCode(student.getStudentCode());
         responseDto.setName(student.getName());
         responseDto.setEmail(student.getEmail());
         responseDto.setPhone(student.getPhone());
-
         return responseDto;
     }
 }

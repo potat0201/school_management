@@ -41,7 +41,8 @@ public class Enrollment {
     @AllArgsConstructor
     public static class ScoreDetail {
         private Double midterm;
-        private Double finall; // Chữ 'final' là từ khóa Java, nên dùng 'finall' hoặc 'finalScore'
+        @Field("final")
+        private Double finalExam;
         private Double assignment;
     }
 }
