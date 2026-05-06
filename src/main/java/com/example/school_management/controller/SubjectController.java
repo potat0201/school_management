@@ -33,4 +33,23 @@ public class SubjectController {
     public ResponseEntity<Subject> create(@Valid @RequestBody Subject subject) {
         return new ResponseEntity<>(subjectRepository.save(subject), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Subject> update(@PathVariable String id, @RequestBody Subject subject) {
+        Subject existing = subjectRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy môn học"));
+        existing.setName(subject.getName());
+        existing.setCredits(subject.getCredits());
+        existing.setDepartment(subject.getDepartment());
+        return ResponseEntity.ok(subjectRepository.save(existing));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        if (!subjectRepository.existsById(id)) {
+            throw new NotFoundException("Không tìm thấy môn học");
+        }
+        subjectRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

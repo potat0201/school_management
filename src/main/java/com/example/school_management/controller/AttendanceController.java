@@ -21,17 +21,26 @@ public class AttendanceController {
     private final AttendanceService attendanceService;
 
     @GetMapping
-    public List<Attendance> getAll() {
+    public List<Attendance> getAll(
+            @RequestParam(required = false) String classId,
+            @RequestParam(required = false) String studentId
+    ) {
+        if (classId != null && studentId != null) {
+            return attendanceRepository.findByStudentIdAndClassId(studentId, classId)
+                    .map(List::of).orElse(List.of());
+        }
+        if (classId != null) return attendanceRepository.findByClassId(classId);
+        if (studentId != null) return attendanceRepository.findByStudentId(studentId);
         return attendanceRepository.findAll();
-    }
-
-    @PostMapping
-    public ResponseEntity<Attendance> create(@Valid @RequestBody Attendance attendance) {
-        return new ResponseEntity<>(attendanceRepository.save(attendance), HttpStatus.CREATED);
     }
 
     @PostMapping("/mark")
     public ResponseEntity<Attendance> mark(@Valid @RequestBody AttendanceMarkRequest request) {
         return ResponseEntity.ok(attendanceService.markAttendance(request));
+    }
+
+    @PostMapping
+    public ResponseEntity<Attendance> create(@Valid @RequestBody Attendance attendance) {
+        return new ResponseEntity<>(attendanceRepository.save(attendance), HttpStatus.CREATED);
     }
 }

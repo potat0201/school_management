@@ -1,63 +1,203 @@
 <!doctype html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>School Management</title>
-    <link rel="stylesheet" href="/styles.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quản lý Trường học</title>
+  <link rel="stylesheet" href="/styles.css"/>
 </head>
 <body>
-<div class="container">
-    <h1>School Management Dashboard</h1>
-    <p>Luồng dữ liệu: MongoDB -> Spring Boot Backend -> Frontend (localhost:8080)</p>
 
-    <section>
-        <h2>Tổng quan collection</h2>
-        <div id="overview" class="cards"></div>
-    </section>
-
-    <section>
-        <h2>Thêm sinh viên</h2>
-        <form id="studentForm">
-            <input type="text" id="studentCode" placeholder="Mã sinh viên" required />
-            <input type="text" id="studentName" placeholder="Họ tên" required />
-            <input type="email" id="studentEmail" placeholder="Email" required />
-            <input type="text" id="studentPhone" placeholder="Số điện thoại" />
-            <button type="submit">Thêm</button>
-        </form>
-        <p id="message"></p>
-    </section>
-
-    <section>
-        <h2>Danh sách sinh viên</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>Mã SV</th>
-                <th>Họ tên</th>
-                <th>Email</th>
-                <th>Số điện thoại</th>
-            </tr>
-            </thead>
-            <tbody id="studentBody"></tbody>
-        </table>
-    </section>
-
-    <section>
-        <h2>Danh sách lớp học</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>Mã lớp</th>
-                <th>Subject ID</th>
-                <th>Teacher ID</th>
-                <th>Semester ID</th>
-            </tr>
-            </thead>
-            <tbody id="classBody"></tbody>
-        </table>
-    </section>
+<!-- ====== LOGIN SCREEN ====== -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🎓</div>
+    <h1>Quản lý Trường học</h1>
+    <p class="login-subtitle">Đăng nhập để tiếp tục</p>
+    <form id="loginForm">
+      <div class="field">
+        <label>Tên đăng nhập</label>
+        <input type="text" id="loginUsername" placeholder="admin" autocomplete="username" required/>
+      </div>
+      <div class="field">
+        <label>Mật khẩu</label>
+        <input type="password" id="loginPassword" placeholder="••••••" autocomplete="current-password" required/>
+      </div>
+      <div id="loginError" class="error-banner" style="display:none"></div>
+      <button type="submit" class="btn btn-primary btn-full" id="loginBtn">Đăng nhập</button>
+    </form>
+  </div>
 </div>
+
+<!-- ====== MAIN APP ====== -->
+<div id="mainApp" class="app-layout" style="display:none">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">🎓 School Mgmt</div>
+    <ul class="nav-list">
+      <li><a href="#" class="nav-link" data-section="dashboard">📊 Tổng quan</a></li>
+      <li><a href="#" class="nav-link" data-section="users">👤 Tài khoản</a></li>
+      <li><a href="#" class="nav-link" data-section="students">👥 Sinh viên</a></li>
+      <li><a href="#" class="nav-link" data-section="teachers">👨‍🏫 Giảng viên</a></li>
+      <li><a href="#" class="nav-link" data-section="subjects">📚 Môn học</a></li>
+      <li><a href="#" class="nav-link" data-section="semesters">📅 Học kỳ</a></li>
+      <li><a href="#" class="nav-link" data-section="classes">🏫 Lớp học</a></li>
+      <li><a href="#" class="nav-link" data-section="enrollments">📝 Đăng ký học</a></li>
+      <li><a href="#" class="nav-link" data-section="attendance">✅ Điểm danh</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" id="sidebarUser"></div>
+      <button class="btn btn-logout" id="logoutBtn">↩ Đăng xuất</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Dashboard -->
+    <section id="dashboardSection" class="section">
+      <div class="section-header"><h2>📊 Tổng quan hệ thống</h2></div>
+      <div id="dashboardCards" class="stats-grid"></div>
+    </section>
+
+    <!-- Users -->
+    <section id="usersSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>👤 Quản lý tài khoản</h2>
+        <button class="btn btn-primary" id="addUserBtn">+ Thêm tài khoản</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tên đăng nhập</th><th>Vai trò</th><th>Trạng thái</th><th>Ngày tạo</th><th>Thao tác</th></tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Students -->
+    <section id="studentsSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>👥 Quản lý sinh viên</h2>
+        <button class="btn btn-primary" id="addStudentBtn">+ Thêm sinh viên</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã SV</th><th>Họ tên</th><th>Email</th><th>SĐT</th><th>GPA</th><th>Tín chỉ</th><th>Thao tác</th></tr></thead>
+          <tbody id="studentsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Teachers -->
+    <section id="teachersSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>👨‍🏫 Quản lý giảng viên</h2>
+        <button class="btn btn-primary" id="addTeacherBtn">+ Thêm giảng viên</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã GV</th><th>Họ tên</th><th>Email</th><th>Khoa/Bộ môn</th><th>Thao tác</th></tr></thead>
+          <tbody id="teachersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Subjects -->
+    <section id="subjectsSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>📚 Quản lý môn học</h2>
+        <button class="btn btn-primary" id="addSubjectBtn">+ Thêm môn học</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã MH</th><th>Tên môn học</th><th>Số tín chỉ</th><th>Khoa</th><th>Thao tác</th></tr></thead>
+          <tbody id="subjectsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Semesters -->
+    <section id="semestersSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>📅 Quản lý học kỳ</h2>
+        <button class="btn btn-primary" id="addSemesterBtn">+ Thêm học kỳ</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã HK</th><th>Tên học kỳ</th><th>Bắt đầu</th><th>Kết thúc</th><th>Đăng ký</th><th>Thao tác</th></tr></thead>
+          <tbody id="semestersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Classes -->
+    <section id="classesSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>🏫 Quản lý lớp học</h2>
+        <button class="btn btn-primary" id="addClassBtn">+ Thêm lớp học</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã lớp</th><th>Môn học</th><th>Giảng viên</th><th>Học kỳ</th><th>Lịch học</th><th>SV</th><th>Thao tác</th></tr></thead>
+          <tbody id="classesBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Enrollments -->
+    <section id="enrollmentsSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>📝 Quản lý đăng ký học</h2>
+        <button class="btn btn-primary" id="addEnrollmentBtn">+ Đăng ký học</button>
+      </div>
+      <div class="filter-bar">
+        <label>Lọc theo lớp:</label>
+        <select id="enrollFilterClass"><option value="">-- Tất cả --</option></select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sinh viên</th><th>Lớp học</th><th>Giữa kỳ</th><th>Bài tập</th><th>Cuối kỳ</th><th>Điểm TK</th><th>Thao tác</th></tr></thead>
+          <tbody id="enrollmentsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Attendance -->
+    <section id="attendanceSection" class="section" style="display:none">
+      <div class="section-header">
+        <h2>✅ Quản lý điểm danh</h2>
+        <button class="btn btn-primary" id="addAttendanceBtn">+ Điểm danh</button>
+      </div>
+      <div class="filter-bar">
+        <label>Lọc theo lớp:</label>
+        <select id="attendFilterClass"><option value="">-- Tất cả --</option></select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sinh viên</th><th>Lớp học</th><th>Có mặt</th><th>Vắng</th><th>Trễ</th><th>Thao tác</th></tr></thead>
+          <tbody id="attendanceBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ====== MODAL ====== -->
+<div id="modalOverlay" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modalTitle">Modal</h3>
+      <button class="modal-close" id="modalCloseBtn">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ====== TOAST ====== -->
+<div id="toastWrap" class="toast-wrap"></div>
+
 <script src="/app.js"></script>
 </body>
 </html>

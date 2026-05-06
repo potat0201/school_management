@@ -33,4 +33,24 @@ public class SemesterController {
     public ResponseEntity<Semester> create(@Valid @RequestBody Semester semester) {
         return new ResponseEntity<>(semesterRepository.save(semester), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Semester> update(@PathVariable String id, @RequestBody Semester semester) {
+        Semester existing = semesterRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy học kỳ"));
+        existing.setName(semester.getName());
+        existing.setStartDate(semester.getStartDate());
+        existing.setEndDate(semester.getEndDate());
+        existing.setIsRegistrationOpen(semester.getIsRegistrationOpen());
+        return ResponseEntity.ok(semesterRepository.save(existing));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        if (!semesterRepository.existsById(id)) {
+            throw new NotFoundException("Không tìm thấy học kỳ");
+        }
+        semesterRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class StudentDto {
-    private String id; // Trả về cho frontend khi tạo thành công
+    private String id;
 
     @NotBlank(message = "Mã sinh viên không được để trống")
     private String studentCode;
@@ -20,5 +20,7 @@ public class StudentDto {
 
     private String phone;
 
-    // Lưu ý: Không có trường GPA hay TotalCredits ở đây vì lúc tạo mới mặc định là 0
+    private Double gpa;
+
+    private Integer totalCredits;
 }

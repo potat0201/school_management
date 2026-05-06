@@ -26,12 +26,8 @@ public class ClassroomController {
         if (teacherId != null && semesterId != null) {
             return classroomRepository.findByTeacherIdAndSemesterId(teacherId, semesterId);
         }
-        if (teacherId != null) {
-            return classroomRepository.findByTeacherId(teacherId);
-        }
-        if (semesterId != null) {
-            return classroomRepository.findBySemesterId(semesterId);
-        }
+        if (teacherId != null) return classroomRepository.findByTeacherId(teacherId);
+        if (semesterId != null) return classroomRepository.findBySemesterId(semesterId);
         return classroomRepository.findAll();
     }
 
@@ -44,5 +40,25 @@ public class ClassroomController {
     @PostMapping
     public ResponseEntity<Classroom> create(@Valid @RequestBody Classroom classroom) {
         return new ResponseEntity<>(classroomRepository.save(classroom), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Classroom> update(@PathVariable String id, @RequestBody Classroom classroom) {
+        Classroom existing = classroomRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy lớp học"));
+        existing.setSubjectId(classroom.getSubjectId());
+        existing.setTeacherId(classroom.getTeacherId());
+        existing.setSemesterId(classroom.getSemesterId());
+        existing.setSchedules(classroom.getSchedules());
+        return ResponseEntity.ok(classroomRepository.save(existing));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        if (!classroomRepository.existsById(id)) {
+            throw new NotFoundException("Không tìm thấy lớp học");
+        }
+        classroomRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

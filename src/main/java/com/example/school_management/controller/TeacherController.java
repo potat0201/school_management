@@ -33,4 +33,23 @@ public class TeacherController {
     public ResponseEntity<Teacher> create(@Valid @RequestBody Teacher teacher) {
         return new ResponseEntity<>(teacherRepository.save(teacher), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Teacher> update(@PathVariable String id, @RequestBody Teacher teacher) {
+        Teacher existing = teacherRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy giảng viên"));
+        existing.setName(teacher.getName());
+        existing.setDepartment(teacher.getDepartment());
+        existing.setEmail(teacher.getEmail());
+        return ResponseEntity.ok(teacherRepository.save(existing));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        if (!teacherRepository.existsById(id)) {
+            throw new NotFoundException("Không tìm thấy giảng viên");
+        }
+        teacherRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

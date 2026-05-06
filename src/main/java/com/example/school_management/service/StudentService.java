@@ -30,8 +30,7 @@ public class StudentService {
                 .totalCredits(0)
                 .build();
 
-        Student savedStudent = studentRepository.save(student);
-        return mapToDto(savedStudent);
+        return mapToDto(studentRepository.save(student));
     }
 
     public StudentDto getStudentByCode(String studentCode) {
@@ -44,13 +43,37 @@ public class StudentService {
         return studentRepository.findAll().stream().map(this::mapToDto).toList();
     }
 
+    public StudentDto updateStudent(String id, StudentDto dto) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy sinh viên"));
+
+        if (!student.getEmail().equals(dto.getEmail()) && studentRepository.existsByEmail(dto.getEmail())) {
+            throw new BadRequestException("Email đã được sử dụng!");
+        }
+
+        student.setName(dto.getName());
+        student.setEmail(dto.getEmail());
+        student.setPhone(dto.getPhone());
+
+        return mapToDto(studentRepository.save(student));
+    }
+
+    public void deleteStudent(String id) {
+        if (!studentRepository.existsById(id)) {
+            throw new NotFoundException("Không tìm thấy sinh viên");
+        }
+        studentRepository.deleteById(id);
+    }
+
     private StudentDto mapToDto(Student student) {
-        StudentDto responseDto = new StudentDto();
-        responseDto.setId(student.getId());
-        responseDto.setStudentCode(student.getStudentCode());
-        responseDto.setName(student.getName());
-        responseDto.setEmail(student.getEmail());
-        responseDto.setPhone(student.getPhone());
-        return responseDto;
+        StudentDto dto = new StudentDto();
+        dto.setId(student.getId());
+        dto.setStudentCode(student.getStudentCode());
+        dto.setName(student.getName());
+        dto.setEmail(student.getEmail());
+        dto.setPhone(student.getPhone());
+        dto.setGpa(student.getGpa());
+        dto.setTotalCredits(student.getTotalCredits());
+        return dto;
     }
 }

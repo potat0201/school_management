@@ -3,7 +3,11 @@ spring:
     name: school_management
   data:
     mongodb:
-      uri: mongodb://localhost:27017/school_management_db
+      uri: mongodb://localhost:27017/school_management
 
 server:
   port: 8080
+
+jwt:
+  secret: c2Nob29sbWFuYWdlbWVudC1qd3Qtc2VjcmV0LWtleS0yMDI0LXNlY3VyZS1rZXk=
+  expiration: 86400000
